@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { defaultRanges, Calendar, DateRange } from '../../../lib';
 import Section from 'components/Section';
+import moment from 'moment';
 
 import 'normalize.css';
 import 'styles/global'
@@ -16,6 +17,7 @@ export default class Main extends Component {
       'datePicker' : null,
       'firstDayOfWeek' : null,
       'predefined' : {},
+      'limitedRangePicker': {},
     }
   }
 
@@ -25,8 +27,32 @@ export default class Main extends Component {
     });
   }
 
+  dateLimit(range, payload) {
+    const maxDays = 3;
+    const { endDate, startDate } = range;
+    const { step } = payload;
+    const swap = startDate.isAfter(endDate);
+
+    if (swap) {
+      range.startDate = moment(endDate);
+      range.endDate = moment(startDate);
+    }
+
+    const maxEndDate = moment(range.startDate).add(maxDays -1, 'day');
+
+    if (range.endDate.isAfter(maxEndDate)) {
+      if (step === 1 || swap) {
+        range.endDate = maxEndDate;
+      } else {
+        range.startDate = moment(endDate).subtract(maxDays - 1, 'day');
+      }
+    }
+
+    return range;
+  }
+
   render() {
-    const { rangePicker, linked, datePicker, firstDayOfWeek, predefined} = this.state;
+    const { rangePicker, linked, datePicker, firstDayOfWeek, predefined, limitedRangePicker } = this.state;
     const format = 'dddd, D MMMM YYYY';
 
     return (
@@ -190,6 +216,29 @@ export default class Main extends Component {
                 boxShadow    : '0 2px 4px rgba(0, 0, 0, 0.4)'
               }
             }}
+          />
+        </Section>
+
+        <Section title='Date Limit Range Picker'>
+          <div>
+            <input
+              type='text'
+              readOnly
+              value={ limitedRangePicker['startDate'] && limitedRangePicker['startDate'].format(format).toString() }
+            />
+            <input
+              type='text'
+              readOnly
+              value={ limitedRangePicker['endDate'] && limitedRangePicker['endDate'].format(format).toString() }
+            />
+          </div>
+
+          <DateRange
+            startDate={ now => now.add(-3, 'day') }
+            endDate={ now => now.add(-1, 'day') }
+            onInit={ this.handleChange.bind(this, 'limitedRangePicker') }
+            onChange={ this.handleChange.bind(this, 'limitedRangePicker') }
+            dateLimit={ this.dateLimit }
           />
         </Section>
       </main>
