@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { defaultRanges, Calendar, DateRange } from '../../../lib';
 import Section from 'components/Section';
+import moment from 'moment';
 
 import 'normalize.css';
 import 'styles/global'
@@ -16,6 +17,8 @@ export default class Main extends Component {
       'datePicker' : null,
       'firstDayOfWeek' : null,
       'predefined' : {},
+      'forceEditStart' : {},
+      'forceEditEnd' : {}
     }
   }
 
@@ -26,7 +29,7 @@ export default class Main extends Component {
   }
 
   render() {
-    const { rangePicker, linked, datePicker, firstDayOfWeek, predefined} = this.state;
+    const { rangePicker, linked, datePicker, firstDayOfWeek, predefined, forceEditStart, forceEditEnd} = this.state;
     const format = 'dddd, D MMMM YYYY';
 
     return (
@@ -192,6 +195,57 @@ export default class Main extends Component {
             }}
           />
         </Section>
+
+        <Section title='Force Edit Start Date'>
+          <div>
+            <input
+              type='text'
+              readOnly
+              value={ forceEditStart['startDate'] && forceEditStart['startDate'].format(format).toString() }
+            />
+            <input
+              type='text'
+              value={ forceEditStart['endDate'] && forceEditStart['endDate'].format(format).toString() }
+            />
+          </div>
+
+          <DateRange
+            startDate='10/11/2015'
+            endDate={ now => {
+              return '11/12/2015';
+            }}
+            maxDate="11/12/2015"
+            onInit={ this.handleChange.bind(this, 'forceEditStart') }
+            onChange={ this.handleChange.bind(this, 'forceEditStart') }
+            forceEdit="startDate"
+          />
+        </Section>
+
+        <Section title='Force Edit End Date'>
+          <div>
+            <input
+              type='text'
+              value={ forceEditEnd['startDate'] && forceEditEnd['startDate'].format(format).toString() }
+            />
+            <input
+              type='text'
+              readOnly
+              value={ forceEditEnd['endDate'] && forceEditEnd['endDate'].format(format).toString() }
+            />
+          </div>
+
+          <DateRange
+            startDate='10/11/2015'
+            endDate={ now => {
+              return '11/12/2015';
+            }}
+            minDate="10/11/2015"
+            onInit={ this.handleChange.bind(this, 'forceEditEnd') }
+            onChange={ this.handleChange.bind(this, 'forceEditEnd') }
+            forceEdit="endDate"
+          />
+        </Section>
+
       </main>
     )
   }

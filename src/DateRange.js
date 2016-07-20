@@ -14,13 +14,16 @@ class DateRange extends Component {
 
     const startDate = parseInput(props.startDate, format);
     const endDate   = parseInput(props.endDate, format);
+    const rangeKeys = ['startDate', 'endDate'];
 
     this.state = {
-      range     : { startDate, endDate },
-      link      : linkedCalendars && endDate,
+      range         : { startDate, endDate },
+      link          : linkedCalendars && endDate,
+      forceEdit     : rangeKeys.indexOf(this.props.forceEdit) >= 0 ? this.props.forceEdit : null
     }
 
     this.step = 0;
+    this.rangeKeys = rangeKeys;
     this.styles = getTheme(theme);
   }
 
@@ -51,7 +54,10 @@ class DateRange extends Component {
   }
 
   handleSelect(date, source) {
-    if (date.startDate && date.endDate) {
+    const key = this.rangeKeys.indexOf(this.state.forceEdit);
+    this.step = !! ~key ? key : ((date.startDate && date.endDate) ? 0 : this.step);
+
+    if (date.startDate && date.endDate && !~key) {
       this.step = 0;
       return this.setRange(date, source);
     }
@@ -65,8 +71,8 @@ class DateRange extends Component {
 
     switch (this.step) {
       case 0:
-        range['startDate'] = date;
-        range['endDate'] = date;
+        range['startDate'] = key === 0 || ! ~key ? date : startDate;
+        range['endDate']   = key === 1 || ! ~key ? date : endDate;
         this.step = 1;
         break;
 
@@ -176,7 +182,8 @@ DateRange.propTypes = {
   onInit          : PropTypes.func,
   onChange        : PropTypes.func,
   onlyClasses     : PropTypes.bool,
-  classNames      : PropTypes.object
+  classNames      : PropTypes.object,
+  forceEdit       : PropTypes.string
 }
 
 export default DateRange;
