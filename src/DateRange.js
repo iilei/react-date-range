@@ -44,8 +44,14 @@ class DateRange extends Component {
     }
   }
 
+  dateLimit(range) {
+    range = this.props.dateLimit(range, { step: this.step });
+    return range;
+  }
+
   setRange(range, source) {
     const { onChange } = this.props
+    range = this.dateLimit(range);
     range = this.orderRange(range);
 
     this.setState({ range });
@@ -164,6 +170,7 @@ DateRange.defaultProps = {
   format          : 'DD/MM/YYYY',
   calendars       : 2,
   onlyClasses     : false,
+  dateLimit       : range => range,
   classNames      : {}
 }
 

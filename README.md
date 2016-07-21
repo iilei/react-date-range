@@ -85,3 +85,4 @@ class MyComponent extends Component {
 * **linkedCalendars:** *(Boolean)* default: false
 * **calendars:** *(Number)* default: 2
 * **ranges:** *(Object)* default: none
+* **dateLimit:** *(Function)* default: none - see [Demo's source](https://github.com/Adphorus/react-date-range/blob/master/demo/src/components/Main.js#L241)
